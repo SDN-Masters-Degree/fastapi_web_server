@@ -20,4 +20,4 @@ async def recognize_audio_synthetic(audio_file: UploadFile = Depends(valid_audio
     except AudioDurationException | ModelPredictionException as e:
         return JSONResponse(ErrorResponse(detail=e), 404)
 
-    return JSONResponse(AudioResponse(result=res))
+    return JSONResponse(AudioResponse(result=res).model_dump())
