@@ -16,14 +16,17 @@ class AudioResult(StrEnum):
     fake = 'fake'
 
 
-async def determine_audio_auth(audio_file: BinaryIO) -> AudioResult:
+async def determine_audio_spoof(audio_file: BinaryIO) -> AudioResult:
     sample_rate: int = 1024 * 6
     two_secs: int = 2
     sample, sr = load(audio_file, normalize=True, channels_first=True)
-    max_audio_duration: int = sr * two_secs
+    min_audio_duration: int = sr * two_secs
 
-    if len(sample[0]) < max_audio_duration:
-        raise AudioDurationException('Audio duration is less than two seconds')
+    if len(sample[0]) < min_audio_duration:
+        raise AudioDurationException(
+            f'Audio duration is less than '
+            f'{min_audio_duration / sr} seconds'
+        )
 
     sample = sample[:, 0:sr * two_secs]
     sample = mean(sample, dim=0, keepdim=True)

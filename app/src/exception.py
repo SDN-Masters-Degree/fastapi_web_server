@@ -1,6 +1,6 @@
-class AudioDurationException(Exception):
+class AudioDurationException(BaseException):
     pass
 
 
-class ModelPredictionException(Exception):
+class ModelPredictionException(BaseException):
     pass
