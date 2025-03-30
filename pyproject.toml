@@ -1,14 +1,20 @@
+[project]
+name = 'audio_spoof_detection_service'
+version = "03.03.2025"
+authors = [
+     {name = "Sufiyarov Danil", email = "danil-sufiyarov@mail.ru"}
+]
+requires-python = ">= 3.12"
+dependencies = [
+    "fastapi == 0.115.0",
+    "uvicorn == 0.31.0",
+    "torchaudio == 2.4.1",
+    "onnxruntime == 1.19.2",
+    "dishka == 1.5.2"
+]
+
 [build-system]
 requires = ["setuptools >= 61.0"]
 
-[project]
-name = 'fastapi_web_server'
-version = "2024.08.10"
-authors = [{name = "Sufiyarov Danil", email = "danil-sufiyarov@mail.ru"}]
-requires-python = ">= 3.12"
-dependencies = [
-  "fastapi == 0.115.0",
-  "uvicorn == 0.31.0",
-  "torchaudio == 2.4.1",
-  "onnxruntime == 1.19.2"
-]
+[tool.setuptools]
+package-dir = {"" = "src"}
