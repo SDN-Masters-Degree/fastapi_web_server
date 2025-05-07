@@ -19,6 +19,7 @@ class OnnxCnnNeuralModelGateway(CnnNeuralModelGateway):
         sample_rate: int = self.settings.target_sample_rate
         audio_dur_sec = int(self.settings.audio_min_duration_milli / 1000)
         sample, sr = load(audio.file, normalize=True, channels_first=True)
+        audio.file.seek(0)
         min_audio_duration: int = sr * audio_dur_sec
 
         if len(sample[0]) < min_audio_duration:

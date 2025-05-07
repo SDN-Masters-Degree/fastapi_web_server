@@ -3,6 +3,7 @@ from onnxruntime import InferenceSession
 
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.application.usecases.audio import CheckAudioSpoofUseCase
+from audio_spoof_detection_service.application.business_rules.audio import IsValidAudioFileRule
 from audio_spoof_detection_service.infrastructure.neural_model_gateways.onnx.cnn import OnnxCnnNeuralModelGateway
 from audio_spoof_detection_service.infrastructure.settings import Settings, create_settings_instance
 
@@ -35,10 +36,17 @@ class UseCaseProvider(Provider):
     check_spoof_use_case_provider = provide(CheckAudioSpoofUseCase)
 
 
+class BusinessRuleProvider(Provider):
+    scope = Scope.REQUEST
+
+    validate_audio_provider = provide(IsValidAudioFileRule)
+
+
 def create_container() -> AsyncContainer:
     return make_async_container(
         SettingsProvider(),
         SessionProvider(),
         GatewayProvider(),
-        UseCaseProvider()
+        UseCaseProvider(),
+        BusinessRuleProvider()
     )

@@ -10,7 +10,8 @@ dependencies = [
     "uvicorn == 0.31.0",
     "torchaudio == 2.4.1",
     "onnxruntime == 1.19.2",
-    "dishka == 1.5.2"
+    "dishka == 1.5.2",
+    "python-dotenv == 1.1.0"
 ]
 
 [build-system]

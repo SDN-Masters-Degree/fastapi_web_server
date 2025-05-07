@@ -24,6 +24,9 @@ async def check_spoof(
         check_spoof_interactor: FromDishka[CheckAudioSpoofUseCase]
 ) -> JSONResponse:
     output = await check_spoof_interactor(
-        CheckAudioSpoofInputDTO(audio_file=audio_file.file)
+        CheckAudioSpoofInputDTO(
+            audio_file=audio_file.file,
+            audio_file_name=audio_file.filename
+        )
     )
     return JSONResponse(AudioResponse(result=output.result).model_dump())

@@ -38,10 +38,11 @@ def app_factory() -> FastAPI:
     app = FastAPI(
         title="Deepfake Voice Recognition",
         description="Сервис, определяющий дипфейки голосов",
-        version="2024.10.08"
+        version="2025.05.07"
     )
     init_middleware(app)
     init_routers(app)
+    init_exception_handlers(app)
     init_container(app)
 
     return app
