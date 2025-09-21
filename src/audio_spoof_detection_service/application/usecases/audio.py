@@ -1,6 +1,6 @@
-from audio_spoof_detection_service.domain.common.interactor import Interactor
 from audio_spoof_detection_service.domain.entities.audio import AudioEntity
 from audio_spoof_detection_service.domain.types_and_consts import AudioResult
+from audio_spoof_detection_service.application.common.interactor import Interactor
 from audio_spoof_detection_service.application.contracts.audio import (
     CheckAudioSpoofInputDTO, CheckAudioSpoofOutputDTO
 )

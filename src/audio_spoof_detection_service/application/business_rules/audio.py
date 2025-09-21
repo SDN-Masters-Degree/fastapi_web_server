@@ -2,8 +2,8 @@ from torchaudio import load
 
 from audio_spoof_detection_service.infrastructure.settings import Settings
 from audio_spoof_detection_service.domain.entities.audio import AudioEntity
-from audio_spoof_detection_service.domain.common.business_rule import BusinessRule
 from audio_spoof_detection_service.domain.error import AudioError
+from audio_spoof_detection_service.application.common.business_rule import BusinessRule
 
 
 class IsValidAudioFileRule(BusinessRule):
