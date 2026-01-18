@@ -4,7 +4,7 @@ from onnxruntime import InferenceSession
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.application.usecases.audio import CheckAudioSpoofUseCase
 from audio_spoof_detection_service.application.business_rules.audio import IsValidAudioFileRule
-from audio_spoof_detection_service.infrastructure.neural_model_gateways.onnx.cnn import OnnxCnnNeuralModelGateway
+from audio_spoof_detection_service.infrastructure.neural_model_gateways.torch.cnn.neural_model_gateway import TorchCnnNeuralModelGateway
 from audio_spoof_detection_service.infrastructure.settings import Settings, create_settings_instance
 
 
@@ -27,7 +27,7 @@ class SessionProvider(Provider):
 class GatewayProvider(Provider):
     scope = Scope.REQUEST
 
-    cnn_neural_model_provider = provide(OnnxCnnNeuralModelGateway, provides=CnnNeuralModelGateway)
+    torch_cnn_neural_model_provider = provide(TorchCnnNeuralModelGateway, provides=CnnNeuralModelGateway)
 
 
 class UseCaseProvider(Provider):
