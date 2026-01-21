@@ -17,7 +17,7 @@ class IsValidAudioFileRule(BusinessRule):
     @staticmethod
     async def __validate_extension(audio: AudioEntity):
         allowed_audio_extensions = ('.mp3', '.wav', '.ogg')
-        file_name: str = audio.file_name
+        file_name: str = audio.name
 
         if not file_name.endswith(allowed_audio_extensions):
             raise AudioError(

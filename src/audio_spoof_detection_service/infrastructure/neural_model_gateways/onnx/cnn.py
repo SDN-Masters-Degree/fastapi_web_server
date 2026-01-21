@@ -6,6 +6,7 @@ from onnxruntime import InferenceSession
 
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.domain.entities.audio import AudioEntity
+from audio_spoof_detection_service.domain.types_and_consts import AudioResult
 from audio_spoof_detection_service.domain.error import NeuralModelError
 from audio_spoof_detection_service.infrastructure.settings import Settings
 
@@ -15,7 +16,7 @@ class OnnxCnnNeuralModelGateway(CnnNeuralModelGateway):
         self.session = session
         self.settings = settings
 
-    async def predict(self, audio: AudioEntity) -> float:
+    async def predict(self, audio: AudioEntity) -> AudioResult:
         sample_rate: int = self.settings.target_sample_rate
         audio_dur_sec = int(self.settings.audio_min_duration_milli / 1000)
         sample, sr = load(audio.file, normalize=True, channels_first=True)
@@ -42,4 +43,4 @@ class OnnxCnnNeuralModelGateway(CnnNeuralModelGateway):
 
         sigmoid_val: float = float(output[0])
 
-        return sigmoid_val
+        return AudioResult.fake if sigmoid_val > 0.5 else AudioResult.real

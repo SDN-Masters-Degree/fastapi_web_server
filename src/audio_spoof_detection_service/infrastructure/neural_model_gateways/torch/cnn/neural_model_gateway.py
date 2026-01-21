@@ -5,6 +5,7 @@ from torchaudio.transforms import MFCC
 
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.domain.entities.audio import AudioEntity
+from audio_spoof_detection_service.domain.types_and_consts import AudioResult
 from audio_spoof_detection_service.domain.error import NeuralModelError
 from audio_spoof_detection_service.infrastructure.settings import Settings
 from audio_spoof_detection_service.infrastructure.neural_model_gateways.torch.cnn.model import TorchCnnModel
@@ -20,7 +21,7 @@ class TorchCnnNeuralModelGateway(CnnNeuralModelGateway):
         self.model.eval()
         self.transform = MFCC(sample_rate=self.settings.target_sample_rate, n_mfcc=40)
 
-    async def predict(self, audio: AudioEntity) -> float:
+    async def predict(self, audio: AudioEntity) -> AudioResult:
         sample_rate: int = self.settings.target_sample_rate
         audio_dur_sec = int(self.settings.audio_min_duration_milli / 1000)
         sample, sr = load(audio.file, normalize=True, channels_first=True)
@@ -47,4 +48,4 @@ class TorchCnnNeuralModelGateway(CnnNeuralModelGateway):
 
         sigmoid_val: float = output.mean().float()
 
-        return sigmoid_val
+        return AudioResult.fake if sigmoid_val > 0.5 else AudioResult.real

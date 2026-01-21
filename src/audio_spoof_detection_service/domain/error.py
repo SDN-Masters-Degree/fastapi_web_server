@@ -8,3 +8,7 @@ class NeuralModelError(DomainError):
 
 class AudioError(DomainError):
     pass
+
+
+class UserError(DomainError):
+    pass
