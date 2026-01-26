@@ -9,6 +9,7 @@ from audio_spoof_detection_service.domain.types_and_consts import AudioResult
 class CheckAudioSpoofInputDTO:
     audio_file: BinaryIO
     audio_file_name: str
+    user_id: int
 
 
 @dataclass(frozen=True)

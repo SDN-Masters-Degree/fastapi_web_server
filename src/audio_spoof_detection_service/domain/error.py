@@ -1,14 +1,18 @@
 class DomainError(Exception):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class NeuralModelError(DomainError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class AudioError(DomainError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class UserError(DomainError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)

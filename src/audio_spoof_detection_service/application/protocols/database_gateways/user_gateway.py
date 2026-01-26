@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from audio_spoof_detection_service.domain.entities.user import UserEntity, OneTimePasswordEntity
+from audio_spoof_detection_service.domain.entities.user import UserEntity
 
 
 class UserGateway(Protocol):
@@ -10,10 +10,7 @@ class UserGateway(Protocol):
     async def get_user_by_email(self, email: str) -> UserEntity:
         raise NotImplementedError()
 
-    async def add_otp(self, email: str) -> OneTimePasswordEntity:
-        raise NotImplementedError()
-
-    async def get_last_otp(self, email: str) -> OneTimePasswordEntity:
+    async def get_user_by_refresh_token(self, refresh_token: str) -> UserEntity:
         raise NotImplementedError()
 
     async def update_user(self, user: UserEntity) -> None:

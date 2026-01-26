@@ -1,13 +1,12 @@
-import secrets
-from typing import Any
-from datetime import datetime, timedelta
+from dataclasses import asdict
+from datetime import datetime, timedelta, timezone
 
-from jose import jwt
+from jose import jwt, JWTError
 
 from audio_spoof_detection_service.application.protocols.providers.token_provider import TokenProvider
 from audio_spoof_detection_service.infrastructure.settings import Settings
 from audio_spoof_detection_service.domain.entities.user import UserEntity
-from audio_spoof_detection_service.domain.types_and_consts import TokenPair
+from audio_spoof_detection_service.domain.types_and_consts import TokenPayload
 
 
 class JwtTokenProvider(TokenProvider):
@@ -15,30 +14,30 @@ class JwtTokenProvider(TokenProvider):
         self.settings = settings
 
     async def generate_access_token(self, user: UserEntity) -> str:
-        current_time = datetime.now()
-        payload = {
-            'sub': user.id,
-            'username': user.name,
-            'email': user.email,
-            'type': 'access',
-            'ait': current_time,
-            'exp': current_time + timedelta(minutes=self.settings.access_token_expire_minutes)
-        }
-        return jwt.encode(payload, self.settings.jwt_secret_key, self.settings.algorithm)
+        current_time = datetime.now(tz=timezone.utc)
+        token_payload = TokenPayload(
+            sub=user.email,
+            type='access',
+            exp=current_time + timedelta(minutes=self.settings.access_token_expire_minutes)
+        )
+        return jwt.encode(asdict(token_payload), self.settings.jwt_secret_key, self.settings.algorithm)
 
-    async def generate_refresh_token(self) -> str:
-        return secrets.token_urlsafe(64)
+    async def generate_refresh_token(self, user: UserEntity) -> str:
+        current_time = datetime.now(tz=timezone.utc)
+        token_payload = TokenPayload(
+            sub=user.email,
+            type='refresh',
+            exp=current_time + timedelta(days=self.settings.refresh_token_expire_days)
+        )
+        return jwt.encode(asdict(token_payload), self.settings.jwt_secret_key, self.settings.algorithm)
 
-    async def verify_access_token(self, token: str) -> dict[str, Any] | None:
-        payload = jwt.decode(token, self.settings.jwt_secret_key, self.settings.algorithm)
+    async def verify_token(self, token: str) -> TokenPayload | None:
+        try:
+            payload = jwt.decode(token, self.settings.jwt_secret_key, self.settings.algorithm)
 
-        if payload.get('type') != 'access':
+            if payload.get('type') in ('access', 'refresh'):
+                return TokenPayload(**payload)
+
             return None
-
-        return payload
-
-    async def create_token_pair(self, user: UserEntity) -> TokenPair:
-        access_token = await self.generate_access_token(user)
-        refresh_token = await self.generate_refresh_token()
-        verified_token = await self.verify_access_token(access_token)
-        return TokenPair(access_token=access_token, refresh_token=refresh_token, expires_at=verified_token.get('exp'))
+        except JWTError:
+            return None

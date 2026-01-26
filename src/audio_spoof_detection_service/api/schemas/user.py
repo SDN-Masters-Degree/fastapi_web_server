@@ -6,19 +6,44 @@ from pydantic import BaseModel, EmailStr
 class RegisterUserRequest(BaseModel):
     username: str
     email: EmailStr
+    password: str
 
 
 class RegisterUserResponse(BaseModel):
     username: str
-    email: EmailStr
+    email: str
     registered_at: datetime
 
 
 class LoginUserRequest(BaseModel):
     email: EmailStr
-    one_time_password: str
+    password: str
 
 
 class LoginUserResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class LogoutUserRequest(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class LogoutUserResponse(BaseModel):
+    message: str
+
+
+class GetUserInfoResponse(BaseModel):
+    user_id: int
+    email: str
+    registered_at: datetime
+
+
+class RefreshTokensRequest(BaseModel):
+    refresh_token: str
+
+
+class RefreshTokensResponse(BaseModel):
     access_token: str
     refresh_token: str

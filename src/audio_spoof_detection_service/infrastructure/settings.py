@@ -13,7 +13,7 @@ ALGORITHM='ALGORITHM'
 ACCESS_TOKEN_EXPIRE_MINUTES='ACCESS_TOKEN_EXPIRE_MINUTES'
 REFRESH_TOKEN_EXPIRE_DAYS='REFRESH_TOKEN_EXPIRE_DAYS'
 SAMPLE_RATE = 'TARGET_SAMPLE_RATE'
-AUDIO_DURATION = 'AUDIO_MIN_DURATION_MILLI'
+AUDIO_DURATION_MS = 'AUDIO_MIN_DURATION_MS'
 CNN_MODEL_PATH = 'CNN_MODEL_PATH'
 
 
@@ -26,7 +26,7 @@ class Settings:
     access_token_expire_minutes: int
     refresh_token_expire_days: int
     target_sample_rate: int
-    audio_min_duration_milli: int
+    audio_min_duration_ms: int
     cnn_model_path: str
 
 
@@ -39,6 +39,6 @@ def create_settings_instance() -> Settings:
         access_token_expire_minutes=int(os.getenv(ACCESS_TOKEN_EXPIRE_MINUTES)),
         refresh_token_expire_days=int(os.getenv(REFRESH_TOKEN_EXPIRE_DAYS)),
         target_sample_rate=int(os.getenv(SAMPLE_RATE)),
-        audio_min_duration_milli=int(os.getenv(AUDIO_DURATION)),
+        audio_min_duration_ms=int(os.getenv(AUDIO_DURATION_MS)),
         cnn_model_path=os.getenv(CNN_MODEL_PATH)
     )

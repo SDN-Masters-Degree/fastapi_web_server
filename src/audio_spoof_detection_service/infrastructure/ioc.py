@@ -6,10 +6,18 @@ from onnxruntime import InferenceSession
 
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.application.protocols.database_gateways.audio_gateway import AudioMetaInfoGateway
+from audio_spoof_detection_service.application.protocols.database_gateways.user_gateway import UserGateway
+from audio_spoof_detection_service.application.protocols.providers.token_provider import TokenProvider
 from audio_spoof_detection_service.application.usecases.audio import CheckAudioSpoofUseCase, GetAudioMetaInfosUseCase
+from audio_spoof_detection_service.application.usecases.user import (
+    RegisterUserUseCase, LoginUserUseCase, LogoutUserUseCase, GetUserInfoUseCase,
+    RefreshUserTokensUseCase
+)
 from audio_spoof_detection_service.application.business_rules.audio import IsValidAudioFileRule
 from audio_spoof_detection_service.infrastructure.neural_model_gateways.torch.cnn.neural_model_gateway import TorchCnnNeuralModelGateway
-from audio_spoof_detection_service.infrastructure.database_gateways.sqlite.audio_gateway import SqliteAudioMetaInfoGateway
+from audio_spoof_detection_service.infrastructure.database_gateways.sqlalchemy.audio_gateway import SqlAlchemyAudioMetaInfoGateway
+from audio_spoof_detection_service.infrastructure.database_gateways.sqlalchemy.user_gateway import SqlAlchemyUserGateway
+from audio_spoof_detection_service.infrastructure.providers.token_provider import JwtTokenProvider
 from audio_spoof_detection_service.infrastructure.settings import Settings, create_settings_instance
 
 
@@ -45,11 +53,22 @@ class OnnxSessionProvider(Provider):
 class GatewayProvider(Provider):
     scope = Scope.REQUEST
     torch_cnn_neural_model_provider = provide(TorchCnnNeuralModelGateway, provides=CnnNeuralModelGateway)
-    audio_meta_info_gateway_provider = provide(SqliteAudioMetaInfoGateway, provides=AudioMetaInfoGateway)
+    audio_meta_info_gateway_provider = provide(SqlAlchemyAudioMetaInfoGateway, provides=AudioMetaInfoGateway)
+    user_gateway_provider = provide(SqlAlchemyUserGateway, provides=UserGateway)
+
+
+class ProviderProvider(Provider):
+    scope = Scope.APP
+    token_provider_provider = provide(JwtTokenProvider, provides=TokenProvider)
 
 
 class UseCaseProvider(Provider):
     scope = Scope.REQUEST
+    register_user_use_case_provider = provide(RegisterUserUseCase)
+    login_user_use_case_provider = provide(LoginUserUseCase)
+    logout_user_use_case_provider = provide(LogoutUserUseCase)
+    get_user_info_use_case_provider = provide(GetUserInfoUseCase)
+    refresh_user_tokens_use_case_provider= provide(RefreshUserTokensUseCase)
     check_spoof_use_case_provider = provide(CheckAudioSpoofUseCase)
     get_audio_meta_infos_use_case_provider = provide(GetAudioMetaInfosUseCase)
 
@@ -66,6 +85,7 @@ def create_container() -> AsyncContainer:
         SqlAlchemySessionProvider(),
         OnnxSessionProvider(),
         GatewayProvider(),
+        ProviderProvider(),
         UseCaseProvider(),
         BusinessRuleProvider()
     )

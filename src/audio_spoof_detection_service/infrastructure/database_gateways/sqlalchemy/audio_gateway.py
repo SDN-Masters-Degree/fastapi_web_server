@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm.session import Session
 
 from audio_spoof_detection_service.application.protocols.database_gateways.audio_gateway import AudioMetaInfoGateway
-from audio_spoof_detection_service.infrastructure.database_gateways.orm import AudioMetaInfoOrm
+from audio_spoof_detection_service.infrastructure.database_gateways.sqlalchemy.orm import AudioMetaInfoOrm
 from audio_spoof_detection_service.domain.entities.audio import AudioMetaInfoEntity
 from audio_spoof_detection_service.domain.types_and_consts import AudioResult
 

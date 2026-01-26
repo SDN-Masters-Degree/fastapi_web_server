@@ -1,36 +1,59 @@
 from dataclasses import dataclass
 
 from audio_spoof_detection_service.domain.entities.user import UserEntity
-from audio_spoof_detection_service.domain.types_and_consts import TokenPair
 
 
 @dataclass(frozen=True)
 class GetUserInfoInputDTO:
-    email: str
+    access_token: str
 
 
 @dataclass(frozen=True)
 class GetUserInfoOutputDTO:
-    result: UserEntity
+    user: UserEntity
 
 
 @dataclass(frozen=True)
 class RegisterUserInputDTO:
     username: str
     email: str
+    password: str
 
 
 @dataclass(frozen=True)
 class RegisterUserOutputDTO:
-    result: UserEntity
+    user: UserEntity
 
 
 @dataclass(frozen=True)
 class LoginUserInputDTO:
     email: str
-    one_time_password: str
+    password: str
 
 
 @dataclass(frozen=True)
 class LoginUserOutputDTO:
-    result: TokenPair
+    access_token: str
+    refresh_token: str
+
+
+@dataclass(frozen=True)
+class LogoutUserInputDTO:
+    access_token: str
+    refresh_token: str
+
+
+@dataclass(frozen=True)
+class LogoutUserOutputDTO:
+    success: bool
+
+
+@dataclass(frozen=True)
+class RefreshUserTokensInputDTO:
+    refresh_token: str
+
+
+@dataclass(frozen=True)
+class RefreshUserTokensOutputDTO:
+    access_token: str
+    refresh_token: str

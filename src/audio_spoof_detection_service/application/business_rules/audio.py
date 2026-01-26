@@ -16,20 +16,17 @@ class IsValidAudioFileRule(BusinessRule):
 
     @staticmethod
     async def __validate_extension(audio: AudioEntity):
-        allowed_audio_extensions = ('.mp3', '.wav', '.ogg')
-        file_name: str = audio.name
+        allowed_audio_extensions = ('.mp3', '.wav', '.ogg', '.flac')
+        file_name: str = audio.meta_info.name
 
         if not file_name.endswith(allowed_audio_extensions):
-            raise AudioError(
-                f'{file_name} is not allowed extension, '
-                f'use {allowed_audio_extensions}'
-            )
+            raise AudioError(f'{file_name} is not allowed extension, use {allowed_audio_extensions}')
 
     async def __validate_duration_and_sample_rate(self, audio: AudioEntity):
-        audio_dur_sec = int(self.settings.audio_min_duration_milli / 1000)
+        audio_dur_sec = int(self.settings.audio_min_duration_ms / 1000)
         sample, sr = load(audio.file, normalize=True, channels_first=True)
         audio.file.seek(0)
-        # функция load не сбрасывает позицию чтения после работы с аудиофайлом, поэтому делаем это сами
+        # функция torchaudio.load не сбрасывает позицию чтения после работы с аудиофайлом, поэтому делаем это сами
 
         if sr < self.settings.target_sample_rate:
             raise AudioError(

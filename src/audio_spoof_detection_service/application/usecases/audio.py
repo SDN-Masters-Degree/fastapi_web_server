@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from audio_spoof_detection_service.domain.entities.audio import AudioEntity, AudioMetaInfoEntity
 from audio_spoof_detection_service.application.common.interactor import Interactor
@@ -23,14 +23,15 @@ class CheckAudioSpoofUseCase(Interactor[CheckAudioSpoofInputDTO, CheckAudioSpoof
             file=input_dto.audio_file,
             meta_info=AudioMetaInfoEntity(
                 id=None,
-                user_id=None,
+                user_id=input_dto.user_id,
                 name=input_dto.audio_file_name,
                 analyze_result=None,
-                created_at=datetime.now()
+                created_at=datetime.now(tz=timezone.utc)
             )
         )
         await self.is_valid_audio_business_rule(audio)
         result = await self.cnn_model_gateway.predict(audio)
+        audio.meta_info.analyze_result = result
         await self.audio_meta_info_gateway.add_audio_meta_info(audio.meta_info)
 
         return CheckAudioSpoofOutputDTO(result=result)
