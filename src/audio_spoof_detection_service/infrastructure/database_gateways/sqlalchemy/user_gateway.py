@@ -39,17 +39,25 @@ class SqlAlchemyUserGateway(UserGateway):
         user.id = user_orm.id
         return user
 
-    async def get_user_by_email(self, email: str) -> UserEntity:
+    async def get_user_by_email(self, email: str) -> UserEntity | None:
         get_user_by_email_query = select(UserOrm).where(UserOrm.email == email)
         result = self.session.execute(get_user_by_email_query)
         user_orm: UserOrm = result.scalar()
+
+        if user_orm is None:
+            return None
+
         user_entity = await SqlAlchemyUserGateway.__convert_orm_to_entity(user_orm)
         return user_entity
 
-    async def get_user_by_refresh_token(self, refresh_token: str) -> UserEntity:
+    async def get_user_by_refresh_token(self, refresh_token: str) -> UserEntity | None:
         get_user_by_refresh_token_query = select(UserOrm).where(UserOrm.refresh_token == refresh_token)
         result = self.session.execute(get_user_by_refresh_token_query)
         user_orm: UserOrm = result.scalar()
+
+        if user_orm is None:
+            return None
+
         user_entity = await SqlAlchemyUserGateway.__convert_orm_to_entity(user_orm)
         return user_entity
 

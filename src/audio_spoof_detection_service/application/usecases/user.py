@@ -67,14 +67,13 @@ class LogoutUserUseCase(Interactor[LogoutUserInputDTO, LogoutUserOutputDTO]):
         self.user_gateway = user_gateway
 
     async def __call__(self, input_dto: LogoutUserInputDTO) -> LogoutUserOutputDTO:
-        access_token_payload = await self.token_provider.verify_token(input_dto.access_token)
         refresh_token_payload = await self.token_provider.verify_token(input_dto.refresh_token)
 
-        if not access_token_payload:
-            raise UserError('Ошибка при верификации access токена')
-
         if not refresh_token_payload:
-            raise UserError('Ошибка при верификации refresh токена')
+            raise UserError('Ошибка при верификации refresh токена.')
+
+        if refresh_token_payload.type != 'refresh':
+            raise UserError('Тип предоставленного токена не является типом "refresh".')
 
         email = refresh_token_payload.sub
         user = await self.user_gateway.get_user_by_email(email)
@@ -109,18 +108,15 @@ class RefreshUserTokensUseCase(Interactor[RefreshUserTokensInputDTO, RefreshUser
         self.user_gateway = user_gateway
 
     async def __call__(self, input_dto: RefreshUserTokensInputDTO) -> RefreshUserTokensOutputDTO:
-        user = await self.user_gateway.get_user_by_refresh_token(input_dto.refresh_token)
+        refresh_token_payload = await self.token_provider.verify_token(input_dto.refresh_token)
 
-        if user.refresh_token is None:
-            raise UserError('Пользователь не авторизирован.')
-
-        refresh_token_payload = await self.token_provider.verify_token(user.refresh_token)
-
-        if not refresh_token_payload:
+        if refresh_token_payload is None:
             raise UserError('Ошибка при валидации refresh токена.')
 
-        if refresh_token_payload.exp > datetime.now(tz=timezone.utc):
-            raise UserError('Refresh token пользователя истек.')
+        user = await self.user_gateway.get_user_by_email(refresh_token_payload.sub)
+
+        if user is None:
+            raise UserError('Пользователь не найден.')
 
         access_token = await self.token_provider.generate_access_token(user)
         refresh_token = await self.token_provider.generate_refresh_token(user)

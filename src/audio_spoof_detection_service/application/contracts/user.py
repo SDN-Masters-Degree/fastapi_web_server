@@ -39,7 +39,6 @@ class LoginUserOutputDTO:
 
 @dataclass(frozen=True)
 class LogoutUserInputDTO:
-    access_token: str
     refresh_token: str
 
 

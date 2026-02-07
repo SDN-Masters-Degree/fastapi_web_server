@@ -18,3 +18,7 @@ class AudioMetaInfo(BaseModel):
 
 class AudioMetaInfoList(BaseModel):
     audio_meta_infos: list[AudioMetaInfo]
+
+
+class DeleteAudioMetaInfoResponse(BaseModel):
+    status: bool

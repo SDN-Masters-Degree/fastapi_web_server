@@ -4,11 +4,14 @@ from audio_spoof_detection_service.domain.entities.audio import AudioEntity, Aud
 from audio_spoof_detection_service.application.common.interactor import Interactor
 from audio_spoof_detection_service.application.contracts.audio import (
     CheckAudioSpoofInputDTO, CheckAudioSpoofOutputDTO,
-    GetAudioMetaInfosInputDTO, GetAudioMetaInfosOutputDTO
+    GetAudioMetaInfosInputDTO, GetAudioMetaInfosOutputDTO,
+    GetAudioMetaInfoInputDTO, GetAudioMetaInfoOutputDTO,
+    DeleteAudioMetaInfoInputDTO, DeleteAudioMetaInfoOutputDTO
 )
 from audio_spoof_detection_service.application.protocols.neural_model_gateways.cnn import CnnNeuralModelGateway
 from audio_spoof_detection_service.application.protocols.database_gateways.audio_gateway import AudioMetaInfoGateway
 from audio_spoof_detection_service.application.business_rules.audio import IsValidAudioFileRule
+from audio_spoof_detection_service.domain.error import AudioError
 
 
 class CheckAudioSpoofUseCase(Interactor[CheckAudioSpoofInputDTO, CheckAudioSpoofOutputDTO]):
@@ -20,11 +23,11 @@ class CheckAudioSpoofUseCase(Interactor[CheckAudioSpoofInputDTO, CheckAudioSpoof
 
     async def __call__(self, input_dto: CheckAudioSpoofInputDTO) -> CheckAudioSpoofOutputDTO:
         audio = AudioEntity(
-            file=input_dto.audio_file,
+            file=input_dto.audiofile,
             meta_info=AudioMetaInfoEntity(
                 id=None,
                 user_id=input_dto.user_id,
-                name=input_dto.audio_file_name,
+                name=input_dto.audiofile_name,
                 analyze_result=None,
                 created_at=datetime.now(tz=timezone.utc)
             )
@@ -44,3 +47,42 @@ class GetAudioMetaInfosUseCase(Interactor[GetAudioMetaInfosInputDTO, GetAudioMet
     async def __call__(self, input_dto: GetAudioMetaInfosInputDTO) -> GetAudioMetaInfosOutputDTO:
         audio_meta_infos = await self.audio_meta_info_gateway.get_all_audio_meta_infos_by_user_id(input_dto.user_id)
         return GetAudioMetaInfosOutputDTO(result=audio_meta_infos)
+
+
+class GetAudioMetaInfoUseCase(Interactor[GetAudioMetaInfoInputDTO, GetAudioMetaInfoOutputDTO]):
+    def __init__(self, audio_meta_info_gateway: AudioMetaInfoGateway):
+        self.audio_meta_info_gateway = audio_meta_info_gateway
+
+    async def __call__(self, input_dto: GetAudioMetaInfoInputDTO) -> GetAudioMetaInfoOutputDTO:
+        try:
+            audio_meta_info = await self.audio_meta_info_gateway.get_audio_meta_info_by_user_id(
+                user_id=input_dto.user_id, audio_name=input_dto.audiofile_name
+            )
+
+            if audio_meta_info is None:
+                raise AudioError('Отсутствует запись об аудио в БД.')
+
+            return GetAudioMetaInfoOutputDTO(audio_info=audio_meta_info)
+        except Exception as e:
+            raise AudioError(f'Не удалось получить информацию об аудио: {e}')
+
+
+class DeleteAudioMetaInfoUseCase(Interactor[DeleteAudioMetaInfoInputDTO, DeleteAudioMetaInfoOutputDTO]):
+    def __init__(self, audio_meta_info_gate: AudioMetaInfoGateway):
+        self.audio_meta_info_gate = audio_meta_info_gate
+
+    async def __call__(self, input_dto: DeleteAudioMetaInfoInputDTO) -> DeleteAudioMetaInfoOutputDTO:
+        try:
+            audio_meta_info = await self.audio_meta_info_gate.get_audio_meta_info_by_user_id(
+                user_id=input_dto.user_id, audio_name=input_dto.audiofile_name
+            )
+
+            if audio_meta_info is None:
+                raise AudioError('Отсутствует запись об аудио в БД.')
+
+            await self.audio_meta_info_gate.delete_audio_meta_info(
+                user_id=input_dto.user_id, audio_name=input_dto.audiofile_name
+            )
+            return DeleteAudioMetaInfoOutputDTO(status=True)
+        except Exception as e:
+            raise AudioError(f'Не удалось удалить информацию об аудио: {e}')

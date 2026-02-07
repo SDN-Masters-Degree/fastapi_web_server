@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm.session import Session
 
 from audio_spoof_detection_service.application.protocols.database_gateways.audio_gateway import AudioMetaInfoGateway
@@ -40,10 +40,17 @@ class SqlAlchemyAudioMetaInfoGateway(AudioMetaInfoGateway):
         audio_meta_info.id = audio_meta_info_orm.id
         return audio_meta_info
 
-    async def get_audio_meta_info_by_id(self, audio_meta_info_id: int) -> AudioMetaInfoEntity:
-        get_audio_meta_info_by_id_query = select(AudioMetaInfoOrm).where(AudioMetaInfoOrm.id == audio_meta_info_id)
+    async def get_audio_meta_info_by_user_id(self, user_id: int, audio_name: str) -> AudioMetaInfoEntity | None:
+        get_audio_meta_info_by_id_query = (
+            select(AudioMetaInfoOrm)
+            .where((AudioMetaInfoOrm.id == user_id) & (AudioMetaInfoOrm.name == audio_name))
+        )
         result = self.session.execute(get_audio_meta_info_by_id_query)
         audio_meta_info_orm: AudioMetaInfoOrm = result.scalar()
+
+        if audio_meta_info_orm is None:
+            return None
+
         audio_meta_info_entity = await SqlAlchemyAudioMetaInfoGateway.__convert_orm_to_entity(audio_meta_info_orm)
         return audio_meta_info_entity
 
@@ -61,7 +68,10 @@ class SqlAlchemyAudioMetaInfoGateway(AudioMetaInfoGateway):
         self.session.merge(audio_meta_info_orm)
         self.session.commit()
 
-    async def delete_audio_meta_info(self, audio_meta_info: AudioMetaInfoEntity) -> None:
-        audio_meta_info_orm = await SqlAlchemyAudioMetaInfoGateway.__convert_entity_to_orm(audio_meta_info)
-        self.session.delete(audio_meta_info_orm)
+    async def delete_audio_meta_info(self, user_id: int, audio_name: str) -> None:
+        delete_audio_info_stmt = (
+            delete(AudioMetaInfoOrm)
+            .where((AudioMetaInfoOrm.user_id == user_id) & (AudioMetaInfoOrm.name == audio_name))
+        )
+        self.session.execute(delete_audio_info_stmt)
         self.session.commit()

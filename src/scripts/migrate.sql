@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS user (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(30) NOT NULL,
     email VARCHAR(50) NOT NULL,
     hashed_password VARCHAR(255) NOT NULL,
@@ -8,9 +8,10 @@ CREATE TABLE IF NOT EXISTS user (
 );
 
 CREATE TABLE IF NOT EXISTS audio_meta_info (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES user(id) ON DELETE CASCADE NOT NULL,
     name VARCHAR(64) NOT NULL,
     analyze_result VARCHAR(10),
     created_at DATETIME NOT NULL
+    UNIQUE (user_id, name)
 );

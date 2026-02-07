@@ -8,10 +8,11 @@ from audio_spoof_detection_service.application.protocols.neural_model_gateways.c
 from audio_spoof_detection_service.application.protocols.database_gateways.audio_gateway import AudioMetaInfoGateway
 from audio_spoof_detection_service.application.protocols.database_gateways.user_gateway import UserGateway
 from audio_spoof_detection_service.application.protocols.providers.token_provider import TokenProvider
-from audio_spoof_detection_service.application.usecases.audio import CheckAudioSpoofUseCase, GetAudioMetaInfosUseCase
+from audio_spoof_detection_service.application.usecases.audio import (
+    CheckAudioSpoofUseCase, GetAudioMetaInfosUseCase, GetAudioMetaInfoUseCase, DeleteAudioMetaInfoUseCase
+)
 from audio_spoof_detection_service.application.usecases.user import (
-    RegisterUserUseCase, LoginUserUseCase, LogoutUserUseCase, GetUserInfoUseCase,
-    RefreshUserTokensUseCase
+    RegisterUserUseCase, LoginUserUseCase, LogoutUserUseCase, GetUserInfoUseCase, RefreshUserTokensUseCase
 )
 from audio_spoof_detection_service.application.business_rules.audio import IsValidAudioFileRule
 from audio_spoof_detection_service.infrastructure.neural_model_gateways.torch.cnn.neural_model_gateway import TorchCnnNeuralModelGateway
@@ -71,6 +72,8 @@ class UseCaseProvider(Provider):
     refresh_user_tokens_use_case_provider= provide(RefreshUserTokensUseCase)
     check_spoof_use_case_provider = provide(CheckAudioSpoofUseCase)
     get_audio_meta_infos_use_case_provider = provide(GetAudioMetaInfosUseCase)
+    get_audio_meta_info_user_case_provider = provide(GetAudioMetaInfoUseCase)
+    delete_audio_meta_info_user_case_provider = provide(DeleteAudioMetaInfoUseCase)
 
 
 class BusinessRuleProvider(Provider):

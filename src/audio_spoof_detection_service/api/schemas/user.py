@@ -26,7 +26,6 @@ class LoginUserResponse(BaseModel):
 
 
 class LogoutUserRequest(BaseModel):
-    access_token: str
     refresh_token: str
 
 
@@ -36,6 +35,7 @@ class LogoutUserResponse(BaseModel):
 
 class GetUserInfoResponse(BaseModel):
     user_id: int
+    username: str
     email: str
     registered_at: datetime
 

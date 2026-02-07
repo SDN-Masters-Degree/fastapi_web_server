@@ -70,9 +70,7 @@ async def logout(
         request: LogoutUserRequest,
         logout_user_interactor: FromDishka[LogoutUserUseCase]
 ) -> JSONResponse:
-    await logout_user_interactor(
-        LogoutUserInputDTO(access_token=request.access_token, refresh_token=request.refresh_token)
-    )
+    await logout_user_interactor(LogoutUserInputDTO(refresh_token=request.refresh_token))
     response = LogoutUserResponse(message='Выход из аккаунта выполнен успешно.')
     return JSONResponse(response.model_dump(mode='json'))
 
@@ -104,6 +102,7 @@ async def me(get_user_info_interactor_result: GetUserInfoOutputDTO = Depends(get
     current_user = get_user_info_interactor_result.user
     response = GetUserInfoResponse(
         user_id=current_user.id,
+        username=current_user.name,
         email=current_user.email,
         registered_at=current_user.registered_at
     )

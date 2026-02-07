@@ -7,10 +7,10 @@ class UserGateway(Protocol):
     async def register_user(self, user: UserEntity) -> UserEntity:
         raise NotImplementedError()
 
-    async def get_user_by_email(self, email: str) -> UserEntity:
+    async def get_user_by_email(self, email: str) -> UserEntity | None:
         raise NotImplementedError()
 
-    async def get_user_by_refresh_token(self, refresh_token: str) -> UserEntity:
+    async def get_user_by_refresh_token(self, refresh_token: str) -> UserEntity | None:
         raise NotImplementedError()
 
     async def update_user(self, user: UserEntity) -> None:
