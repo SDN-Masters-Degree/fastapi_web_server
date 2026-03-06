@@ -51,7 +51,7 @@ async def check_spoof(
         404: {'model': ErrorResponse}
     }
 )
-async def get_users_all_audio_results(
+async def get_users_all_audio_infos(
         get_audio_meta_infos_interactor: FromDishka[GetAudioMetaInfosUseCase],
         get_user_interactor_result: GetUserInfoOutputDTO = Depends(get_current_user)
 ) -> JSONResponse:

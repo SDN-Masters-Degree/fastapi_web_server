@@ -43,7 +43,7 @@ class SqlAlchemyAudioMetaInfoGateway(AudioMetaInfoGateway):
     async def get_audio_meta_info_by_user_id(self, user_id: int, audio_name: str) -> AudioMetaInfoEntity | None:
         get_audio_meta_info_by_id_query = (
             select(AudioMetaInfoOrm)
-            .where((AudioMetaInfoOrm.id == user_id) & (AudioMetaInfoOrm.name == audio_name))
+            .where((AudioMetaInfoOrm.user_id == user_id) & (AudioMetaInfoOrm.name == audio_name))
         )
         result = self.session.execute(get_audio_meta_info_by_id_query)
         audio_meta_info_orm: AudioMetaInfoOrm = result.scalar()
